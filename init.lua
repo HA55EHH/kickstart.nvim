@@ -805,7 +805,57 @@ require('lazy').setup({
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
+-- CUSTOM CONFIGS
+
 -- commands for sourcing full lua file, or running current line or running selection
 vim.keymap.set('n', '<leader><leader>x', '<cmd>source %<CR>')
 vim.keymap.set('n', '<leader>x', ':.lua<CR>')
 vim.keymap.set('v', '<leader>x', ':lua<CR>')
+
+-- terminal stuffs
+local term = {
+  buf = nil,
+  win = nil,
+  job = nil,
+}
+
+local function open_term()
+  vim.cmd.vnew()
+  vim.cmd.term()
+  vim.cmd.wincmd 'J'
+  vim.api.nvim_win_set_height(0, 10)
+
+  term.buf = vim.api.nvim_get_current_buf()
+  term.win = vim.api.nvim_get_current_win()
+  term.job = vim.b.terminal_job_id
+
+  vim.cmd.startinsert()
+end
+
+local function toggle_term(startinsert)
+  if not (term.buf and vim.api.nvim_buf_is_valid(term.buf)) then
+    open_term()
+    return
+  end
+
+  if term.win and vim.api.nvim_win_is_valid(term.win) then
+    vim.api.nvim_win_close(term.win, true)
+    term.win = nil
+    return
+  end
+
+  vim.cmd.vnew()
+  vim.api.nvim_win_set_buf(0, term.buf)
+  vim.cmd.wincmd 'J'
+  vim.api.nvim_win_set_height(0, 10)
+
+  term.win = vim.api.nvim_get_current_win()
+  if startinsert then vim.cmd.startinsert() end
+end
+
+vim.keymap.set('n', '<leader>st', function() toggle_term(false) end)
+
+vim.keymap.set({ 'n', 'i', 't' }, '<C-j>', function()
+  if vim.fn.mode() == 't' then vim.cmd.stopinsert() end
+  toggle_term(true)
+end)
