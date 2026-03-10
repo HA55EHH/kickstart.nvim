@@ -859,3 +859,5 @@ vim.keymap.set({ 'n', 'i', 't' }, '<C-j>', function()
   if vim.fn.mode() == 't' then vim.cmd.stopinsert() end
   toggle_term(true)
 end)
+
+vim.o.shell = '/bin/zsh'
