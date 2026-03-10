@@ -859,3 +859,8 @@ vim.keymap.set({ 'n', 'i', 't' }, '<C-j>', function()
 end)
 
 vim.o.shell = '/bin/zsh'
+
+vim.keymap.set('n', 'yd', function()
+  local diag = vim.diagnostic.get(0, { lnum = vim.fn.line '.' - 1 })[1]
+  if diag then vim.fn.setreg('+', diag.message) end
+end, { desc = 'Yank diagnostic message' })
