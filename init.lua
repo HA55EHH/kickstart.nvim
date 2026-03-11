@@ -332,6 +332,29 @@ require('lazy').setup({
         end,
       })
 
+      vim.keymap.set('n', '<leader>cd', function()
+        local actions = require 'telescope.actions'
+        local action_state = require 'telescope.actions.state'
+
+        builtin.find_files {
+          prompt_title = 'CD into directory',
+          find_command = { 'fd', '--type', 'd', '--max-depth', '2' },
+
+          attach_mappings = function(prompt_bufnr, map)
+            local function cd()
+              local selection = action_state.get_selected_entry()[1]
+              actions.close(prompt_bufnr)
+              vim.cmd('cd ' .. vim.fn.fnameescape(selection))
+            end
+
+            map('i', '<CR>', cd)
+            map('n', '<CR>', cd)
+
+            return true
+          end,
+        }
+      end, { desc = 'Telescope cd into subdir' })
+
       -- Override default behavior and theme when searching
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
