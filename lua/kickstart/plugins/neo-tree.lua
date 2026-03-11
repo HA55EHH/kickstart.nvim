@@ -19,6 +19,14 @@ return {
   ---@type neotree.Config
   opts = {
     filesystem = {
+      filtered_items = {
+        visible = false,
+        hide_dotfiles = false,
+        hide_gitignored = true,
+        hide_by_name = {
+          '.git',
+        },
+      },
       window = {
         mappings = {
           ['<leader>e'] = 'close_window',
